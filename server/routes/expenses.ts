@@ -2,8 +2,6 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
-const expenses = new Hono();
-
 const expenseSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(3).max(100),
@@ -41,7 +39,8 @@ const fakeData: Expense[] = [
     amount: 38.6,
   },
 ];
-expenses
+
+const expenses = new Hono()
   .get("/", (c) => {
     return c.json({
       expenses: fakeData,
