@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // <Skeleton className="h-4 w-[200px]" />
 
-export const Route = createFileRoute("/expenses")({
+export const Route = createFileRoute("/_authenticated/expenses")({
   component: Expenses,
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import { getUser } from "../kind";
 
 const expenseSchema = z.object({
   id: z.number().int().positive(),
@@ -46,7 +47,7 @@ const expenses = new Hono()
       expenses: fakeData,
     });
   })
-  .post("/", zValidator("json", createExpenseSchema), (c) => {
+  .post("/", getUser, zValidator("json", createExpenseSchema), (c) => {
     const expense = c.req.valid("json");
 
     fakeData.push({ ...expense, id: fakeData.length + 1 });
@@ -55,7 +56,7 @@ const expenses = new Hono()
 
     return c.json(expense);
   })
-  .get("/:id{[0-9]+}", (c) => {
+  .get("/:id{[0-9]+}", getUser, (c) => {
     const id = Number.parseInt(c.req.param("id"));
     console.log(id);
 
@@ -67,14 +68,14 @@ const expenses = new Hono()
 
     return c.json({ expense });
   })
-  .get("/total-spent", (c) => {
+  .get("/total-spent", getUser, (c) => {
     const total = fakeData.reduce((sum, expense) => sum + expense.amount, 0);
 
     return c.json({
       total,
     });
   })
-  .delete("/:id{[0-9]+}", (c) => {
+  .delete("/:id{[0-9]+}", getUser, (c) => {
     const id = Number.parseInt(c.req.param("id"));
     console.log(id);
 
