@@ -66,7 +66,7 @@ function Expenses() {
                   </TableRow>
                 ))
             : data?.expenses.map(({ id, title, amount }) => (
-                <TableRow>
+                <TableRow key={id}>
                   <TableCell className="font-medium">{id}</TableCell>
                   <TableCell>{title}</TableCell>
                   <TableCell>{amount}</TableCell>
