@@ -21,4 +21,20 @@ export const userQueryOptions = queryOptions({
   staleTime: Infinity,
 });
 
+export async function getExpenseList() {
+  const res = await api.expenses.$get();
+
+  if (!res.ok) {
+    throw new Error("Server not ok");
+  }
+
+  return res.json();
+}
+
+export const getAllExpenseQueryOptions = queryOptions({
+  queryKey: ["get-expense-list"],
+  queryFn: getExpenseList,
+  staleTime: 1000 * 60 * 3,
+});
+
 export default api;

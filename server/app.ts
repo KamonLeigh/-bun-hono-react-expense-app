@@ -2,11 +2,13 @@ import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { logger } from "hono/logger";
 import expenses from "./routes/expenses";
+import { secureHeaders } from "hono/secure-headers";
 import auth from "./routes/auth";
 
 const app = new Hono();
 
 app.use("/*", logger());
+app.use(secureHeaders());
 
 const apiRoutes = app
   .basePath("/api")

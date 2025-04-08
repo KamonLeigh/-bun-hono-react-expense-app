@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -8,7 +9,6 @@ import {
 } from "@/components/ui/card";
 
 import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Index,
@@ -21,7 +21,9 @@ async function getTotalSpent() {
     throw new Error("Server not ok");
   }
 
-  return res.json();
+  const result = await res.json();
+
+  return result;
 }
 
 function Index() {
@@ -41,7 +43,7 @@ function Index() {
           <CardTitle>Total Spend</CardTitle>
           <CardDescription>The total amount you've spent</CardDescription>
         </CardHeader>
-        <CardContent> {isPending ? "...." : data.total}</CardContent>
+        <CardContent> {isPending ? "...." : data?.total}</CardContent>
       </Card>
     </>
   );

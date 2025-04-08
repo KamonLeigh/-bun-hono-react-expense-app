@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import api from "@/lib/api";
+import { getAllExpenseQueryOptions } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Table,
@@ -18,21 +18,8 @@ export const Route = createFileRoute("/_authenticated/expenses")({
   component: Expenses,
 });
 
-async function getExpenseList() {
-  const res = await api.expenses.$get();
-
-  if (!res.ok) {
-    throw new Error("Server not ok");
-  }
-
-  return res.json();
-}
-
 function Expenses() {
-  const { data, isPending, error } = useQuery({
-    queryKey: ["get-expense-list"],
-    queryFn: getExpenseList,
-  });
+  const { data, isPending, error } = useQuery(getAllExpenseQueryOptions);
 
   if (error) {
     return "An error has occured " + error.message;
@@ -46,6 +33,7 @@ function Expenses() {
             <TableHead className="w-[100px]">id</TableHead>
             <TableHead>Title</TableHead>
             <TableHead className="text-right">Amount</TableHead>
+            <TableHead>Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -63,13 +51,17 @@ function Expenses() {
                     <TableCell>
                       <Skeleton className="h-4 w-[200px]" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-[200px]" />
+                    </TableCell>
                   </TableRow>
                 ))
-            : data?.expenses.map(({ id, title, amount }) => (
+            : data?.expenses.map(({ id, title, amount, date }) => (
                 <TableRow key={id}>
                   <TableCell className="font-medium">{id}</TableCell>
                   <TableCell>{title}</TableCell>
                   <TableCell>{amount}</TableCell>
+                  <TableCell>{date.split("T")[0]}</TableCell>
                 </TableRow>
               ))}
         </TableBody>
