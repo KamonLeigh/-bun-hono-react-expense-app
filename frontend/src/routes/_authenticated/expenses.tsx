@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getAllExpenseQueryOptions } from "@/lib/api";
+import {
+  getAllExpenseQueryOptions,
+  loadingCreateExpenseQueryOptions,
+} from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
   Table,
@@ -16,10 +19,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   component: Expenses,
+  head: () => ({
+    meta: [
+      {
+        title: "List Expenses -- Expense app",
+      },
+    ],
+  }),
 });
 
 function Expenses() {
   const { data, isPending, error } = useQuery(getAllExpenseQueryOptions);
+  const { data: loadingExpense } = useQuery(loadingCreateExpenseQueryOptions);
 
   if (error) {
     return "An error has occured " + error.message;
@@ -37,6 +48,19 @@ function Expenses() {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {loadingExpense?.expense && (
+            <TableRow>
+              <TableCell className="font-medium">
+                {" "}
+                <Skeleton className="h-4 w-[200px]" />
+              </TableCell>
+              <TableCell>{loadingExpense?.expense?.title}</TableCell>
+              <TableCell>{loadingExpense?.expense?.amount}</TableCell>
+              <TableCell>
+                {loadingExpense?.expense?.date.split("T")[0]}
+              </TableCell>
+            </TableRow>
+          )}
           {isPending
             ? Array(4)
                 .fill(0)

@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   component: Profile,
+  head: () => ({
+    meta: [
+      {
+        title: "Profile -- Expence app",
+      },
+    ],
+  }),
 });
 
 function Profile() {

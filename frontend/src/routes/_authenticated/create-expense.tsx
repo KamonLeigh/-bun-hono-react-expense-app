@@ -4,13 +4,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import api, { getAllExpenseQueryOptions } from "@/lib/api";
+import {
+  getAllExpenseQueryOptions,
+  createExpense,
+  loadingCreateExpenseQueryOptions,
+} from "@/lib/api";
 
 import { createExpenseSchema } from "@server/types";
 
 export const Route = createFileRoute("/_authenticated/create-expense")({
   component: CreateExpense,
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "My App is a web application",
+      },
+      {
+        title: "Create -- Expense app",
+      },
+    ],
+  }),
 });
 
 function CreateExpense() {
@@ -23,33 +39,45 @@ function CreateExpense() {
       date: new Date().toISOString(),
     },
     onSubmit: async ({ value }) => {
-      const res = await api.expenses.$post({ json: value });
-
-      if (!res.ok) {
-        throw new Error("Error in creating expense");
-      }
-
-      const newExpense = await res.json();
-
-      queryClient.setQueryData(
-        getAllExpenseQueryOptions.queryKey,
-        (oldData) => {
-          if (!oldData) {
-            queryClient.fetchQuery(getAllExpenseQueryOptions).catch((error) => {
-              console.error("Failed to fetch expenses:", error);
-            });
-
-            return { expenses: [newExpense] };
-          }
-
-          return {
-            ...oldData,
-            expenses: [newExpense, ...oldData.expenses],
-          };
-        },
-      );
-
       navigate({ to: "/expenses" });
+
+      // loading state
+      queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {
+        expense: value,
+      });
+
+      try {
+        const newExpense = await createExpense(value);
+        queryClient.setQueryData(
+          getAllExpenseQueryOptions.queryKey,
+          (oldData) => {
+            if (!oldData) {
+              queryClient
+                .fetchQuery(getAllExpenseQueryOptions)
+                .catch((error) => {
+                  console.error("Failed to fetch expenses:", error);
+                });
+
+              return { expenses: [newExpense] };
+            }
+
+            return {
+              ...oldData,
+              expenses: [newExpense, ...oldData.expenses],
+            };
+          },
+        );
+
+        toast("Expense Created", {
+          description: `Successfully created new expense ${newExpense?.title}`,
+        });
+      } catch {
+        toast("Error", {
+          description: "Failed to create expense",
+        });
+      } finally {
+        queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {});
+      }
     },
   });
   return (

@@ -2,9 +2,11 @@ import {
   createRootRouteWithContext,
   Link,
   Outlet,
+  HeadContent,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "@/components/ui/sonner";
 
 import { type QueryClient } from "@tanstack/react-query";
 
@@ -14,6 +16,17 @@ interface myRouterContext {
 
 export const Route = createRootRouteWithContext<myRouterContext>()({
   component: Root,
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "My App is a web application",
+      },
+      {
+        title: "Home -- Expense app",
+      },
+    ],
+  }),
 });
 
 function NavBar() {
@@ -43,12 +56,14 @@ function NavBar() {
 function Root() {
   return (
     <>
+      <HeadContent />
       <NavBar />
       <hr />
 
       <div className="p-2 gap-2 max-w-2xl m-auto">
         <Outlet />
       </div>
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
       <TanStackRouterDevtools />
     </>
