@@ -71,7 +71,7 @@ const expenses = new Hono()
       expense,
     });
   })
-  .delete(":/id", getUser, async (c) => {
+  .delete("/:id", getUser, async (c) => {
     const id = c.req.param("id");
     const user = c.var.user;
 

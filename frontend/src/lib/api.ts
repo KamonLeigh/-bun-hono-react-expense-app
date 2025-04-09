@@ -60,4 +60,20 @@ export const loadingCreateExpenseQueryOptions = queryOptions<{
   staleTime: Infinity,
 });
 
+export async function deleteExpense({ id }: { id: string }) {
+  const res = await api.expenses[":id"].$delete({
+    param: {
+      id,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Error in deleting expense");
+  }
+
+  const result = await res.json();
+
+  return result;
+}
+
 export default api;
